@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: aliceblue;
+            margin: 0;
+            display: flex;
+            flex-direction:column ;
+            align-items: center; 
+        }
+        .weatherForm{
+            margin-top: 50px;
+        }
+        .cityInput{
+            padding: 10px;
+            font-size: 2rem;
+            border: 2px solid rgb(140, 243, 81);
+            border-radius: 10px;
+            margin: 10px;
+            color: gray;
+        }
+        button[type="submit"]{
+            padding: 10px;
+            font-size: 2rem;
+            border: 2px solid rgb(170, 248, 124);
+            border-radius: 10px;
+            color: whitesmoke;
+            background-color: rgb(21, 233, 91);
+            cursor: pointer;
+        }
+        button[type="submit"]:hover{
+            background-color: rgb(77, 224, 124);
+        }
+        .card{
+            margin-top: 50px;
+            padding: 20px;
+            border: 2px solid rgb(140, 243, 81);
+            border-radius: 10px;
+            background-color: white;
+            text-align: center;
+            width: 300px;
+        }
+        .tempDisplay, .humidityDisplay, .descDisplay, .emoji{
+            margin: 10px 0;
+        }
+        .tempDisplay{
+            font-size: 3rem;
+            font-weight: lighter;
+
+        }
+        .emoji{
+            font-size: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <form class="weatherForm">
+        <input type="text" class="cityInput" placeholder="Enter city">
+        <button type="submit">GET WEATHER</button>
+    </form>
+    <div class="card" style="display: none;">
+        <h1 class="cityDisplay">Colombo</h1>
+        <h1 class="tempDisplay">90°F</h1>
+        <h1 class="humidityDisplay">Humidity: 75%</h1>
+        <h1 class="descDisplay">Clear Skies</h1>
+        <h1 class="emoji">☀️</h1>
+        <p class="errorDisplay">Enter a city</p>
+    </div>
+
+    <script>
+        const weatherForm = document.querySelector(".weatherForm");
+        const cityInput = document.querySelector(".cityInput");
+        const card = document.querySelector(".card");
+        const apikey ="6a648aa152dcbd5a27eddc8f854f2739";
+
+        weatherForm.addEventListener("submit", (e)=>{
+            e.preventDefault();
+            const cityName = cityInput.value.trim();
+            if(cityName === ""){
+                alert("Please enter a city name");
+                return;
+            }
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apikey}&units=imperial`;
+            fetch(url)
+                .then(response => {
+                    if(!response.ok){
+                        throw new Error("City not found");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const cityDisplay = document.querySelector(".cityDisplay");
+                    const tempDisplay = document.querySelector(".tempDisplay");
+                    const humidityDisplay = document.querySelector(".humidityDisplay");
+                    const descDisplay = document.querySelector(".descDisplay");
+                    const emoji = document.querySelector(".emoji");
+                    const errorDisplay = document.querySelector(".errorDisplay");
+
+                    cityDisplay.textContent = data.name;
+                    tempDisplay.textContent = `${data.main.temp}°F`;
+                    humidityDisplay.textContent = `Humidity: ${data.main.humidity}%`;
+                    descDisplay.textContent = data.weather[0].description;
+
+                    const weatherMain = data.weather[0].main;
+                    let weatherEmoji = "";
+                    switch(weatherMain){
+                        case "Clear":
+                            weatherEmoji = "☀️";
+                            break;
+                        case "Clouds":
+                            weatherEmoji = "☁️";
+                            break;
+                        case "Rain":
+                            weatherEmoji = "🌧️";
+                            break;
+                        case "Snow":
+                            weatherEmoji = "❄️";
+                            break;
+                        case "Thunderstorm":
+                            weatherEmoji = "⛈️";
+                            break;
+                        default:
+                            weatherEmoji = "🌈";
+                    }
+                    emoji.textContent = weatherEmoji;
+                    errorDisplay.style.display = "none";
+                    card.style.display = "block";
+                })
+                .catch(error => {
+                    const errorDisplay = document.querySelector(".errorDisplay");
+                    errorDisplay.textContent = error.message;
+                    errorDisplay.style.display = "block";
+                    card.style.display = "none";
+                });
+        });
+    </script>
+</body>
+</html>
