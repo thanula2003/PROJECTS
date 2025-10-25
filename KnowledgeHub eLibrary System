@@ -1,2 +1,5 @@
 http://knowledgehub.ct.ws/                    VISIT THIS SITE
-http://knowledgehub.ct.ws/admin/login.html
+http://knowledgehub.ct.ws/admin/login.html    
+
+username = admin
+password = 12345
